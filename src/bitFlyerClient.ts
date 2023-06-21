@@ -26,9 +26,19 @@ export class BitFlyerClient {
     return await this.client.createMarketBuyOrder(symbol, amount);
   }
 
+  // 指値の買い注文を作成
+  async createLimitBuyOrder(symbol: string, amount: number, price: number) {
+    return await this.client.createLimitBuyOrder(symbol, amount, price);
+  }
+
   // 成行売り注文を作成
   async createMarketSellOrder(symbol: string, amount: number) {
     return await this.client.createMarketSellOrder(symbol, amount);
+  }
+
+  // 指値の売り注文を作成
+  async createLimitSellOrder(symbol: string, amount: number, price: number) {
+    return await this.client.createLimitSellOrder(symbol, amount, price);
   }
 
   // 注文一覧を取得

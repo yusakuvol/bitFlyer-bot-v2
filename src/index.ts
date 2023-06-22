@@ -1,8 +1,10 @@
 import * as dotenv from "dotenv";
 import { config } from "../strategyConfig";
 import { BitFlyerClient } from "./bitFlyerClient";
+import { BitFlyerWebSocket } from "./bitFlyerWebSocket";
 
-const { unit, profitLine, extraBuyLine } = config;
+const { unit, profitLine, buyingIntervalPercentage } = config;
+const symbol = "BTC/JPY";
 
 // 初期化処理
 const initialize = async () => {
@@ -14,14 +16,41 @@ const initialize = async () => {
     throw new Error("API Key and API Secret are required");
   }
 
-  // bitflyerクライアントの初期化
+  // bitFlyerクライアントの初期化
   const bitFlyerClient = new BitFlyerClient(apiKey, apiSecret);
-  return { bitFlyerClient };
+
+  // bitFlyerWebSocketの初期化
+  const bitFlyerWebSocket = new BitFlyerWebSocket(apiKey, apiSecret);
+
+  return { bitFlyerClient, bitFlyerWebSocket };
 };
 
 const main = async () => {
   try {
-    const { bitFlyerClient } = await initialize();
+    const { bitFlyerClient, bitFlyerWebSocket } = await initialize();
+
+    // websocketで板情報と約定履歴を取得
+    bitFlyerWebSocket.subscribe("lightning_board_snapshot_BTC_JPY");
+
+    // 現在の価格を取得
+    const middlePrice = 0;
+
+    // 買い注文を買い目ごとに8個作成(買い目パーセンテージごとに作成)
+    for (let i = 1; i <= 8; i++) {
+      // 買い目の価格を計算
+      const buyingPrice = Math.floor(
+        middlePrice * (1 - buyingIntervalPercentage / 100) ** i
+      );
+      // 買い注文を作成
+      //   const order = await bitFlyerClient.createLimitBuyOrder(
+      //     symbol,
+      //     unit,
+      //     buyingPrice
+      //   );
+      //   console.log(order);
+    }
+
+    // 売り注文を作成
   } catch (error) {
     console.error(error);
   }

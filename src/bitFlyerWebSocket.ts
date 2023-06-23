@@ -1,17 +1,6 @@
 import crypto from "crypto";
 import { io } from "socket.io-client";
 
-type ErrorResponse = {
-  status: "ERROR";
-  error_message: string;
-};
-
-type SuccessResponse = {
-  status: "OK";
-};
-
-type Response = ErrorResponse | SuccessResponse;
-
 export class BitFlyerWebSocket {
   private socket;
   private secret: string;
@@ -40,13 +29,7 @@ export class BitFlyerWebSocket {
       signature,
     };
 
-    this.socket.emit("auth", authParams, (response: Response) => {
-      // if (response.status === "OK") {
-      //   console.log("Authenticated successfully");
-      // } else {
-      //   console.error("Authentication failed", response);
-      // }
-    });
+    this.socket.emit("auth", authParams);
   }
 
   handleMessage(message: string) {
@@ -54,25 +37,13 @@ export class BitFlyerWebSocket {
   }
 
   subscribe(channel: string) {
-    this.socket.emit("subscribe", channel, (response: Response) => {
-      // if (response.status === "OK") {
-      //   console.log(`Subscribed to ${channel} successfully`);
-      // } else {
-      //   console.error(`Failed to subscribe to ${channel}`, response);
-      // }
-    });
+    this.socket.emit("subscribe", channel);
     this.socket.on(channel, (message) => {
       console.log(channel, message);
     });
   }
 
   unsubscribe(channel: string) {
-    this.socket.emit("unsubscribe", channel, (response: Response) => {
-      if (response.status === "OK") {
-        console.log(`Unsubscribed from ${channel} successfully`);
-      } else {
-        console.error(`Failed to unsubscribe from ${channel}`, response);
-      }
-    });
+    this.socket.emit("unsubscribe", channel);
   }
 }

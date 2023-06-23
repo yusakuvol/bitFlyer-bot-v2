@@ -5,6 +5,7 @@ import { BitFlyerWebSocket } from "./bitFlyerWebSocket";
 
 const { unit, profitLine, buyingIntervalPercentage } = config;
 const symbol = "BTC/JPY";
+const subscribeChannel = "lightning_ticker_BTC_JPY";
 
 // 初期化処理
 const initialize = async () => {
@@ -26,31 +27,49 @@ const initialize = async () => {
 };
 
 const main = async () => {
+  console.log("Start bot");
+
   try {
     const { bitFlyerClient, bitFlyerWebSocket } = await initialize();
 
-    // websocketで板情報と約定履歴を取得
-    bitFlyerWebSocket.subscribe("lightning_board_snapshot_BTC_JPY");
+    try {
+      // 動かした時点での価格を取得
+      // 価格はRESTで取得
+      const { ask, bid } = await bitFlyerClient.getTicker(symbol);
+      const middlePrice = (ask + bid) / 2;
 
-    // 現在の価格を取得
-    const middlePrice = 0;
+      // 買い注文を買い目ごとに8個作成(買い目パーセンテージごとに作成)
+      for (let i = 1; i <= 8; i++) {
+        // 買い目の価格を計算
+        const buyingPrice = Math.floor(
+          middlePrice * (1 - buyingIntervalPercentage / 100) ** i
+        );
 
-    // 買い注文を買い目ごとに8個作成(買い目パーセンテージごとに作成)
-    for (let i = 1; i <= 8; i++) {
-      // 買い目の価格を計算
-      const buyingPrice = Math.floor(
-        middlePrice * (1 - buyingIntervalPercentage / 100) ** i
-      );
-      // 買い注文を作成
-      //   const order = await bitFlyerClient.createLimitBuyOrder(
+        // 買い注文を作成
+        //   const order = await bitFlyerClient.createLimitBuyOrder(
+        //     symbol,
+        //     unit,
+        //     buyingPrice
+        //   );
+        //   console.log(order);
+      }
+
+      // 約定を取得
+      bitFlyerWebSocket.subscribe(subscribeChannel);
+
+      // 約定を取得してどの買い注文が約定したかを判断
+      // TODO: 約定した買い注文の価格を取得Websocketでどのように取得するか
+
+      // 売り注文は平均取得価格からprofitLine分上げた価格で指値注文を作成
+      //   const order = await bitFlyerClient.createLimitSellOrder(
       //     symbol,
       //     unit,
-      //     buyingPrice
+      //     profitLine
       //   );
-      //   console.log(order);
+    } catch (error) {
+      bitFlyerWebSocket.unsubscribe(subscribeChannel);
+      console.error(error);
     }
-
-    // 売り注文を作成
   } catch (error) {
     console.error(error);
   }

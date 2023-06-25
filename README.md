@@ -25,7 +25,7 @@ Use the `nano` command to open the `strategyConfig.ts` file in a text editor:
 nano strategyConfig.ts
 ```
 
-1. Run the trading bot:
+3. Run the trading bot:
 
 ```zsh
 yarn start

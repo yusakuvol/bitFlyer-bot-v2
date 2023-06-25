@@ -11,7 +11,6 @@ export class BitFlyerWebSocket {
       transports: ["websocket"],
     });
     this.socket.on("connect", this.authenticate.bind(this));
-    this.socket.on("message", this.handleMessage);
   }
 
   authenticate() {
@@ -32,14 +31,13 @@ export class BitFlyerWebSocket {
     this.socket.emit("auth", authParams);
   }
 
-  handleMessage(message: string) {
-    console.log("Received message: ", message);
-  }
-
-  subscribe(channel: string) {
+  subscribe(
+    channel: string,
+    callback: (channel: string, message: any) => void
+  ) {
     this.socket.emit("subscribe", channel);
     this.socket.on(channel, (message) => {
-      console.log(channel, message);
+      callback(channel, message);
     });
   }
 

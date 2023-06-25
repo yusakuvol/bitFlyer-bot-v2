@@ -51,7 +51,7 @@ const main = async () => {
         //     unit,
         //     buyingPrice
         //   );
-        //   console.log(order);
+        console.log(`create buyOrder price: ${buyingPrice}`);
       }
 
       // 約定を取得
@@ -66,12 +66,13 @@ const main = async () => {
       //     unit,
       //     profitLine
       //   );
+      // console.log(`create sellOrder price: ${profitLine}`);
     } catch (error) {
       bitFlyerWebSocket.unsubscribe(subscribeChannel);
-      console.error(error);
+      console.error(`unhandled error: ${error}`);
     }
   } catch (error) {
-    console.error(error);
+    console.error(`unhandled error: ${error}`);
   }
 };
 

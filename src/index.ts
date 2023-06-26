@@ -6,6 +6,8 @@ import { BitFlyerWebSocket } from "./bitFlyerWebSocket";
 const { unit, profitLine, buyingIntervalPercentage } = config;
 const symbol = "BTC/JPY";
 const subscribeChannel = "parent_order_events";
+let averagePrice = 0;
+let orderCount = 0;
 
 // 初期化処理
 const initialize = async () => {
@@ -56,7 +58,10 @@ const main = async () => {
 
       // 約定を取得
       bitFlyerWebSocket.subscribe(subscribeChannel, (channel, message) => {
-        console.log("Received message from channel", channel, ":", message);
+        // 平均取得価格を計算
+        const price = message.data.price;
+        orderCount++;
+        averagePrice = (averagePrice * (orderCount - 1) + price) / orderCount;
       });
 
       // 約定を取得してどの買い注文が約定したかを判断

@@ -64,9 +64,6 @@ const main = async () => {
         averagePrice = (averagePrice * (orderCount - 1) + price) / orderCount;
       });
 
-      // 約定を取得してどの買い注文が約定したかを判断
-      // TODO: 約定した買い注文の価格を取得Websocketでどのように取得するか
-
       // 売り注文は平均取得価格からprofitLine分上げた価格で指値注文を作成
       //   const order = await bitFlyerClient.createLimitSellOrder(
       //     symbol,

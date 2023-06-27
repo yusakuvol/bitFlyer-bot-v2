@@ -45,4 +45,9 @@ export class BitFlyerClient {
   async getOrders(symbol: string, since?: number, limit?: number) {
     return await this.client.fetchOrders(symbol, since, limit);
   }
+
+  // 注文をキャンセル
+  async cancelOrder(id: string) {
+    return await this.client.cancelOrder(id);
+  }
 }
